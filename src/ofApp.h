@@ -35,7 +35,7 @@ class ofApp : public ofBaseApp{
 		int mouseBuffer;
 		ofTrueTypeFont fontBig;
 		ofTrueTypeFont fontNormal;
-		
+		ofTrueTypeFont fontMini;
 		
 };
 

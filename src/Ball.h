@@ -52,14 +52,17 @@ enum blocktype {
 	emptyblock, normal, finish
 };
 
-typedef struct {
+typedef struct _block {
 	int x, y;
 	blocktype blocktype;
+	struct _block* next;
 }block;
 
-block Map[MAX_MAP_X * MAX_MAP_Y];
+block* Map;
 int blockcount = 0;
 
+
+void initMap();
 void addToMap(int x, int y, blocktype blocktype);
 void cleanMap();
 

@@ -79,11 +79,40 @@ float Ball::getRealSize() {
 
 
 
+void initMap() {
+	Map = (block*)malloc(sizeof(block));
+	Map->x = -1;
+	Map->y = -1;
+	Map->blocktype = emptyblock;
+	Map->next = NULL;
+
+	blockcount = 0;
+}
+
 void addToMap(int x, int y, blocktype blocktype) {
-	Map[blockcount++] = { x, y, blocktype };
+	block* curr = Map;
+	for (int i = 0; i < blockcount; i++) {
+		curr = curr->next;
+	}
+	curr->next = (block*)malloc(sizeof(block));
+	curr = curr->next;
+	curr->x = x;
+	curr->y = y;
+	curr->blocktype = blocktype;
+	curr->next = NULL;
+
+	blockcount++;
 }
 
 void cleanMap() {
+	block* curr = Map->next;
+	block* temp;
+	for (int i = 0; i < blockcount; i++) {
+		temp = curr;
+		curr = curr->next;
+		free(temp);
+	}
+
 	blockcount = 0;
 }
 

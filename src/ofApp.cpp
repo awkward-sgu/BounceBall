@@ -14,11 +14,13 @@ void ofApp::setup() {
 	
 	fontBig.load("CascadiaMono.ttf", 75, true, true, true);
 	fontNormal.load("CascadiaMono.ttf", 30, true, true, true);
+	fontMini.load("CascadiaMono.ttf", 20, true, true, true);
 
 	menuFlag = 1;
 	mouseBuffer = 0;
 
 
+	initMap();
 	ball.reset();
 }
 
@@ -29,21 +31,29 @@ void ofApp::update() {
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
 			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200) {
 
-				if (200 <= ofGetMouseY() && ofGetMouseY() <= 300) { // play
+				if (100 <= ofGetMouseY() && ofGetMouseY() <= 200) { // play
 					menuFlag = 0;
 
 					endFlag = 0;
 					loadFlag = 1;
 					currentLevel = 1;
 				}
-				else if (400 <= ofGetMouseY() && ofGetMouseY() <= 500) { // random mode
+				else if (300 <= ofGetMouseY() && ofGetMouseY() <= 400) { // tutorial
+					menuFlag = 0;
+
+					endFlag = 0;
+					loadFlag = 1;
+					currentLevel = 0;
+				}
+				else if (500 <= ofGetMouseY() && ofGetMouseY() <= 600) { // random
 					menuFlag = 0;
 
 					endFlag = 0;
 					loadFlag = 1;
 					currentLevel = -1;
 				}
-				else if (600 <= ofGetMouseY() && ofGetMouseY() <= 700) { // exit
+				else if (700 <= ofGetMouseY() && ofGetMouseY() <= 800) { // exit
+					free(Map);
 					ofExit(0);
 				}
 
@@ -79,35 +89,37 @@ void ofApp::update() {
 		}
 
 
+		block* curr = Map;
+
 		for (int i = 0; i < blockcount; i++) {
+			curr = curr->next;
 
-			if (Map[i].blocktype) {
+			if (curr->blocktype) {
 
-				if (Map[i].x < rx && ball.getRealX() < Map[i].x) {
-					if (Map[i].y <= ball.getRealY() && ball.getRealY() <= Map[i].y + 1) {
+				if (curr->x < rx && ball.getRealX() < curr->x) {
+					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
 						ball.bounceLeft();
 					}
 				}
-				else if (lx < Map[i].x + 1 && Map[i].x + 1 < ball.getRealX()) {
-					if (Map[i].y <= ball.getRealY() && ball.getRealY() <= Map[i].y + 1) {
+				else if (lx < curr->x + 1 && curr->x + 1 < ball.getRealX()) {
+					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
 						ball.bounceRight();
 					}
 				}
 
-				else if (Map[i].x <= ball.getRealX() && ball.getRealX() <= Map[i].x + 1) {
-					if (!jumpFlag && dy <= Map[i].y + 1 + 2 * ball.getRealSize() && uy > Map[i].y + 1 - 2 * ball.getRealSize()) { // fall gravity problem
+				else if (curr->x <= ball.getRealX() && ball.getRealX() <= curr->x + 1) {
+					if (!jumpFlag && dy <= curr->y + 1 + 2 * ball.getRealSize() && uy > curr->y + 1 - 2 * ball.getRealSize()) { // fall gravity problem
 						jumpFlag = 1;
-						if (Map[i].blocktype == finish) {
+						if (curr->blocktype == finish) {
 							endFlag = 1;
 						}
 					}
-					if (!stopJumpingFlag && uy >= Map[i].y && dy < Map[i].y + 2 * ball.getRealSize()) {
+					if (!stopJumpingFlag && uy >= curr->y && dy < curr->y + 2 * ball.getRealSize()) {
 						stopJumpingFlag = 1;
 					}
 				}
 
 			}
-
 
 		}
 
@@ -124,13 +136,23 @@ void ofApp::update() {
 
 		if (endFlag) {
 			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && 0 <= ofGetMouseX() && ofGetMouseX() <= MAX_X) {
-				ball.reset();
-				endFlag = 0;
-				currentLevel++;
-				loadFlag = 1;
+				if (currentLevel > 0) {
+					ball.reset();
+					endFlag = 0;
+					currentLevel++;
+					loadFlag = 1;
 
-				if (currentLevel > 7) {
+					if (currentLevel > 7) {
+						menuFlag = 1;
+					}
+				}
+				else if (currentLevel == 0) {
 					menuFlag = 1;
+				}
+				else {
+					ball.reset();
+					endFlag = 0;
+					loadFlag = 1;
 				}
 			}
 		}
@@ -155,13 +177,23 @@ void ofApp::update() {
 			if (1300 <= ofGetMouseX() && ofGetMouseX() <= 1500) {
 
 				if (200 <= ofGetMouseY() && ofGetMouseY() <= 400) { // >> : next level
-					ball.reset();
-					endFlag = 0;
-					currentLevel++;
-					loadFlag = 1;
+					if (currentLevel > 0) {
+						ball.reset();
+						endFlag = 0;
+						currentLevel++;
+						loadFlag = 1;
 
-					if (currentLevel > 7) {
+						if (currentLevel > 7) {
+							menuFlag = 1;
+						}
+					}
+					else if (currentLevel == 0) {
 						menuFlag = 1;
+					}
+					else {
+						ball.reset();
+						endFlag = 0;
+						loadFlag = 1;
 					}
 				}
 				else if (500 <= ofGetMouseY() && ofGetMouseY() <= 700) { // x : exit
@@ -186,64 +218,127 @@ void ofApp::update() {
 
 
 	if (ofGetKeyPressed('q')) {
-		ofExit(0);
+		ofExit(1);
 	}
 
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-	if (menuFlag) {
+void ofApp::draw() {
+	if (menuFlag) { // menu
+
 		char string1[20] = "Play";
-		char string2[20] = "Random Mode";
-		char string3[20] = "Exit";
+		char string2[20] = "Tutorial";
+		char string3[20] = "Random";
+		char string4[20] = "Exit";
 
 		// play
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(400, 200, 800, 100, 15);
+		ofDrawRectRounded(400, 100, 800, 100, 15);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 200, 800, 100, 15);
+		ofDrawRectRounded(400, 100, 800, 100, 15);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 200 <= ofGetMouseY() && ofGetMouseY() <= 300)
+		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 100 <= ofGetMouseY() && ofGetMouseY() <= 200)
 			ofSetColor(ofColor::yellow);
 
-		fontNormal.drawString(string1, 800 - 20 * 2, 260);
+		fontNormal.drawString(string1, 800 - 30 * 2, 160);
 
 
-		// random mode
+		// tutorial
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(400, 400, 800, 100, 15);
+		ofDrawRectRounded(400, 300, 800, 100, 15);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 400, 800, 100, 15);
+		ofDrawRectRounded(400, 300, 800, 100, 15);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 400 <= ofGetMouseY() && ofGetMouseY() <= 500)
+		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 300 <= ofGetMouseY() && ofGetMouseY() <= 400)
 			ofSetColor(ofColor::yellow);
-		fontNormal.drawString(string2, 800 - 20 * 6, 460);
+		fontNormal.drawString(string2, 800 - 30 * 4, 360);
+
+
+		// random
+		ofSetColor(ofColor::royalBlue);
+		ofDrawRectRounded(400, 500, 800, 100, 15);
+		ofNoFill();
+		ofSetColor(ofColor::black);
+		ofDrawRectRounded(400, 500, 800, 100, 15);
+		ofFill();
+		ofSetColor(ofColor::white);
+		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 500 <= ofGetMouseY() && ofGetMouseY() <= 600)
+			ofSetColor(ofColor::yellow);
+		fontNormal.drawString(string3, 800 - 30 * 3, 560);
 
 
 		// exit
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(400, 600, 800, 100, 15);
+		ofDrawRectRounded(400, 700, 800, 100, 15);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 600, 800, 100, 15);
+		ofDrawRectRounded(400, 700, 800, 100, 15);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 600 <= ofGetMouseY() && ofGetMouseY() <= 700)
+		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 700 <= ofGetMouseY() && ofGetMouseY() <= 800)
 			ofSetColor(ofColor::orangeRed);
-		fontNormal.drawString(string3, 800 - 20 * 2, 660);
+		fontNormal.drawString(string4, 800 - 30 * 2, 760);
 
 
 	}
 	else {
 		char levelString[20];
-		sprintf(levelString, "Level %d", currentLevel);
+		if (currentLevel > 0) {
+			sprintf(levelString, "Level %d", currentLevel);
+		}
+		else if (currentLevel == 0) {
+			sprintf(levelString, "Tutorial", currentLevel);
+		}
+		else {
+			sprintf(levelString, "Random", currentLevel);
+		}
 		ofSetColor(ofColor::black);
 		fontNormal.drawString(levelString, 100, 100);
+
+
+		if (currentLevel == 0) {
+			char s1[10] = "Key: ";
+			char s2[20] = "Finish Block: ";
+
+
+			ofSetColor(ofColor::black);
+			fontMini.drawString(s1, 8 * SCALE + 40, SCALE + 22);
+
+			ofSetColor(ofColor::yellow);
+			ofDrawRectRounded(10 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofNoFill();
+			ofSetColor(ofColor::black);
+			ofDrawRectRounded(10 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofFill();
+			ofSetColor(ofColor::black);
+			ofDrawTriangle(620, 65, 620, 85, 605, 75);
+
+
+			ofSetColor(ofColor::yellow);
+			ofDrawRectRounded(11 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofNoFill();
+			ofSetColor(ofColor::black);
+			ofDrawRectRounded(11 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofFill();
+			ofSetColor(ofColor::black);
+			ofDrawTriangle(670, 65, 670, 85, 685, 75);
+
+
+			ofSetColor(ofColor::black);
+			fontMini.drawString(s2, 14 * SCALE + 14, SCALE + 22);
+
+			ofSetColor(ofColor::green);
+			ofDrawRectRounded(18 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20.0f);
+			ofNoFill();
+			ofSetColor(ofColor::black);
+			ofDrawRectRounded(18 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20.0f);
+			ofFill();
+		}
 
 
 
@@ -255,22 +350,26 @@ void ofApp::draw(){
 		ofFill();
 
 
+		block* curr = Map;
+
 		for (int i = 0; i < blockcount; i++) {
-			switch (Map[i].blocktype) {
+			curr = curr->next;
+
+			switch (curr->blocktype) {
 			case normal:
 				ofSetColor(ofColor::whiteSmoke);
-				ofDrawRectRounded(Map[i].x * SCALE, (MAX_MAP_Y - Map[i].y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofNoFill();
 				ofSetColor(ofColor::black);
-				ofDrawRectRounded(Map[i].x * SCALE, (MAX_MAP_Y - Map[i].y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofFill();
 				break;
 			case finish:
 				ofSetColor(ofColor::green);
-				ofDrawRectRounded(Map[i].x * SCALE, (MAX_MAP_Y - Map[i].y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofNoFill();
 				ofSetColor(ofColor::black);
-				ofDrawRectRounded(Map[i].x * SCALE, (MAX_MAP_Y - Map[i].y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofFill();
 				break;
 			default:
@@ -289,7 +388,6 @@ void ofApp::draw(){
 			ofFill();
 			ofSetColor(ofColor::yellow);
 			fontBig.drawString("Clear!", 7 * SCALE + 60, 5 * SCALE + 120);
-
 		}
 
 
@@ -352,8 +450,12 @@ void ofApp::loadMap(int flag) {
 			addToMap(3, 0, normal);
 			addToMap(4, 0, normal);
 			addToMap(6, 1, normal);
-			addToMap(8, 3, normal);
-			addToMap(10, 5, finish);
+			addToMap(8, 2, normal);
+			addToMap(10, 4, normal);
+			addToMap(12, 5, normal);
+			addToMap(13, 7, normal);
+			addToMap(15, 8, normal);
+			addToMap(17, 10, finish);
 
 			ball.reset();
 			break;
@@ -364,7 +466,9 @@ void ofApp::loadMap(int flag) {
 			addToMap(2, 1, normal);
 			addToMap(5, 1, normal);
 			addToMap(7, 3, normal);
-			addToMap(10, 4, finish);
+			addToMap(10, 4, normal);
+			addToMap(13, 4, normal);
+			addToMap(16, 5, finish);
 
 			ball.reset();
 			break;
@@ -372,10 +476,11 @@ void ofApp::loadMap(int flag) {
 			ball.setSpawn(0, 2);
 
 			addToMap(0, 0, normal);
-			addToMap(3, 0, normal);
-			addToMap(6, 1, normal);
-			addToMap(9, 2, normal);
-			addToMap(12, 4, finish);
+			addToMap(3, 1, normal);
+			addToMap(6, 3, normal);
+			addToMap(9, 4, normal);
+			addToMap(12, 6, normal);
+			addToMap(15, 8, finish);
 
 			ball.reset();
 			break;
@@ -400,7 +505,8 @@ void ofApp::loadMap(int flag) {
 			addToMap(8, 3, normal);
 			addToMap(11, 4, normal);
 			addToMap(11, 7, normal);
-			addToMap(14, 9, finish);
+			addToMap(14, 9, normal);
+			addToMap(17, 11, normal);
 
 			ball.reset();
 			break;
@@ -414,7 +520,8 @@ void ofApp::loadMap(int flag) {
 			addToMap(9, 4, normal);
 			addToMap(9, 7, normal);
 			addToMap(9, 10, normal);
-			addToMap(13, 7, finish);
+			addToMap(13, 7, normal);
+			addToMap(16, 9, finish);
 
 			ball.reset();
 			break;
@@ -444,8 +551,43 @@ void ofApp::loadMap(int flag) {
 		}
 
 	}
-	else { // random play
+	else if (flag == 0) { // tutorial
+		ball.setSpawn(0, 2);
 
+		addToMap(0, 0, normal);
+		addToMap(1, 0, normal);
+		addToMap(2, 0, normal);
+		addToMap(3, 0, normal);
+		addToMap(4, 1, normal);
+		addToMap(5, 1, normal);
+		addToMap(7, 1, normal);
+		addToMap(8, 1, normal);
+		addToMap(9, 1, normal);
+		addToMap(9, 3, normal);
+		addToMap(10, 1, normal);
+		addToMap(11, 1, normal);
+		addToMap(11, 4, normal);
+		addToMap(12, 4, normal);
+		addToMap(14, 5, normal);
+		addToMap(16, 6, normal);
+		addToMap(18, 8, finish);
+
+		ball.reset();
+	}
+	else { // random
+		// finish  -  x: 15~19, y: 6~12
+		ball.setSpawn(0, 2);
+
+		addToMap(0, 0, normal);
+
+		int x, y;
+
+		x = ofRandom(15, 19.99);
+		y =ofRandom(6, 11.99);
+
+		addToMap(18, 8, finish);
+
+		ball.reset();
 	}
 }
 
