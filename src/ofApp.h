@@ -24,15 +24,19 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		void loadMap(int flag);
+
+
+		void loadMap(int level, int difficulty);
 
 
 		Ball ball;
 		int endFlag;
 		int loadFlag;
 		int menuFlag;
+		int loadingTime;
 		int currentLevel;
-		int mouseBuffer;
+		int difficulty;
+		int mouseBuffer; // to prevent overclick
 		ofTrueTypeFont fontBig;
 		ofTrueTypeFont fontNormal;
 		ofTrueTypeFont fontMini;

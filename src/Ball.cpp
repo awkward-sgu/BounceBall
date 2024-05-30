@@ -10,7 +10,7 @@ Ball::Ball(){
 }
 
 void Ball::reset() {
-	x = spawnX + 0.5; y = spawnY + 0.5;
+	x = spawnX + 0.5; y = spawnY + 0.5; // + 0.5 : centering the place
 	stopJumping();
 }
 
@@ -33,7 +33,7 @@ void Ball::jump() {
 	lastY = y;
 }
 
-void Ball::stopJumping() {
+void Ball::stopJumping() { // make ball fall
 	t = 1;
 	lastY = y - 4.4 * 4.4 / 5;
 }
@@ -79,7 +79,7 @@ float Ball::getRealSize() {
 
 
 
-void initMap() {
+void initMap() { // make empty head node
 	Map = (block*)malloc(sizeof(block));
 	Map->x = -1;
 	Map->y = -1;
@@ -89,7 +89,7 @@ void initMap() {
 	blockcount = 0;
 }
 
-void addToMap(int x, int y, blocktype blocktype) {
+void addToMap(int x, int y, blocktype blocktype) { // linking
 	block* curr = Map;
 	for (int i = 0; i < blockcount; i++) {
 		curr = curr->next;
@@ -104,7 +104,7 @@ void addToMap(int x, int y, blocktype blocktype) {
 	blockcount++;
 }
 
-void cleanMap() {
+void cleanMap() { // free linkedlist except for the head node
 	block* curr = Map->next;
 	block* temp;
 	for (int i = 0; i < blockcount; i++) {
@@ -115,5 +115,37 @@ void cleanMap() {
 
 	blockcount = 0;
 }
+
+
+
+
+
+void initBallMove() {
+	easy[0] = { 1,0 };
+	easy[1] = { 1,2 };
+	easy[2] = { 2,0 };
+	easy[3] = { 2,1 };
+	easy[4] = { 2,2 };
+	easy[5] = { 3,-1 };
+	easy[6] = { 3,0 };
+
+	medium[0] = { 1,3 };
+	medium[1] = { 2,2 };
+	medium[2] = { 2,3 };
+	medium[3] = { 3,-1 };
+	medium[4] = { 3,0 };
+	medium[5] = { 3,1 };
+	medium[6] = { 4,-5 };
+	medium[7] = { 4,-4 };
+
+	hard[0] = { 0,3 };
+	hard[1] = { 2,3 };
+	hard[2] = { 3,1 };
+	hard[3] = { 3,2 };
+	hard[4] = { 4,-4 };
+	hard[5] = { 4,-3 };
+
+}
+
 
 
