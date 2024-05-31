@@ -4,6 +4,13 @@
 
 #include "ofMain.h"
 
+
+/* mode: choose 0 or 1*/
+#define FIT_TO_SCREEN 0
+
+
+
+
 // screen : 1024, 768 -> 1600, 900
 
 // (1200, 900) = (20,15) * 60

@@ -56,16 +56,35 @@ void ofApp::update() {
 	}
 
 
-	// Window screen size
-	if (ofGetWindowWidth() / 1600.0f != xScale || ofGetWindowHeight() / 900.0f != yScale) {
-		xScale = ofGetWindowWidth() / 1600.0f;
-		yScale = ofGetWindowHeight() / 900.0f;
+
+
+
+	// current window size
+	float tempX = ofGetWindowWidth() / 1600.0f;
+	float tempY = ofGetWindowHeight() / 900.0f;
+
+	if (FIT_TO_SCREEN == 0) {
+		if (tempX > tempY) {
+			tempX = tempY;
+		}
+		else if (tempX < tempY) {
+			tempY = tempX;
+		}
+	}
+
+	// if changed
+	if (tempX != xScale || tempY != yScale) {
+		xScale = tempX;
+		yScale = tempY;
+
 		ofSetLineWidth(1 * xScale);
 
 		// load font
 		fontBig.load("CascadiaMono.ttf", 75 * xScale, true, true, true);
 		fontNormal.load("CascadiaMono.ttf", 30 * xScale, true, true, true);
 		fontMini.load("CascadiaMono.ttf", 20 * xScale, true, true, true);
+
+		// we should minimize fond loading : it takes enormous time to load a font
 	}
 
 
@@ -589,7 +608,7 @@ void ofApp::draw() {
 		if (1350 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1450 * xScale && 250 * yScale <= ofGetMouseY() && ofGetMouseY() <= 350 * yScale)
 			ofSetColor(ofColor::yellow);
 		ofSetLineWidth(7.5 * xScale);
-		float a = 2.5; // LineWidth
+		float a = 2.1; // LineWidth
 		ofDrawLine(1375 * xScale, 275 * yScale, (1400 + a) * xScale, (300 + a) * yScale);
 		ofDrawLine(1375 * xScale, 325 * yScale, (1400 + a) * xScale, (300 - a) * yScale);
 		ofDrawLine(1400 * xScale, 275 * yScale, (1425 + a) * xScale, (300 + a) * yScale);
@@ -623,8 +642,13 @@ void ofApp::draw() {
 
 	// screen line
 	ofSetColor(ofColor::black);
-	ofDrawLine(0 * xScale, 900 * yScale, 1600 * xScale, 900 * yScale);
-	ofDrawLine(1600 * xScale, 0 * yScale, 1600 * xScale, 900 * yScale);
+	//ofDrawLine(0 * xScale, 900 * yScale, 1600 * xScale, 900 * yScale);
+	//ofDrawLine(1600 * xScale, 0 * yScale, 1600 * xScale, 900 * yScale);
+	
+
+	// modified to screen block
+	ofDrawRectangle(0 * xScale, 900 * yScale, 1600 * xScale, ofGetWindowHeight() - 900 * yScale);
+	ofDrawRectangle(1600 * xScale, 0 * yScale, ofGetWindowWidth() - 1600 * xScale, 900 * yScale);
 }
 
 
