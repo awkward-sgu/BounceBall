@@ -7,11 +7,13 @@ void ofApp::setup() {
 	ofSetWindowTitle("Bounce Ball");
 	ofSetWindowPosition(100, 100);
 	ofSetWindowShape(1600, 900);
-
+	ofSetEscapeQuitsApp(false); // do not quit on escape
 
 	// Window screen size
 	xScale = ofGetWindowWidth() / 1600.0f;
 	yScale = ofGetWindowHeight() / 900.0f;
+	full = false;
+	screenBuffer = 0;
 
 	// basic setting
 	ofSetBackgroundColor(ofColor::white);
@@ -37,6 +39,23 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
+	// full screen on/off
+	if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && !screenBuffer) {
+		if (1525 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1575 * xScale && 25 * yScale <= ofGetMouseY() && ofGetMouseY() <= 75 * yScale) {
+			full = !full;
+			ofSetFullscreen(full);
+			screenBuffer = 50;
+		}
+	}
+
+	// full screen off
+	if (ofGetKeyPressed(OF_KEY_ESC) && full && !screenBuffer) {
+		full = 0;
+		ofSetFullscreen(full);
+		screenBuffer = 50;
+	}
+
+
 	// Window screen size
 	if (ofGetWindowWidth() / 1600.0f != xScale || ofGetWindowHeight() / 900.0f != yScale) {
 		xScale = ofGetWindowWidth() / 1600.0f;
@@ -53,7 +72,7 @@ void ofApp::update() {
 
 	if (menuFlag == 1) { // first menu screen
 		if (loadingTime > 0) { // loading
-			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
+			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && !screenBuffer) {
 				loadingTime = 0;
 			}
 			else {
@@ -201,7 +220,7 @@ void ofApp::update() {
 
 
 		if (endFlag) {
-			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && 0 <= ofGetMouseX() && ofGetMouseX() <= MAX_X) {
+			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && 0 * xScale <= ofGetMouseX() && ofGetMouseX() <= MAX_X * xScale) {
 				// when touched clear screen
 				nextLevel();
 			}
@@ -248,6 +267,11 @@ void ofApp::update() {
 	}
 
 
+	// screenBuffer control
+	if (screenBuffer > 0) {
+		screenBuffer--;
+	}
+
 
 	// force stop
 	if (ofGetKeyPressed('q')) {
@@ -258,6 +282,41 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+
+	// screen
+	ofSetColor(ofColor::aqua);
+	ofDrawRectRounded(1525 * xScale, 25 * yScale, 50 * xScale, 50 * yScale, 5 * xScale);
+	ofNoFill();
+	ofSetColor(ofColor::black);
+	ofDrawRectRounded(1525 * xScale, 25 * yScale, 50 * xScale, 50 * yScale, 5 * xScale);
+	ofFill();
+	ofSetColor(ofColor::black);
+	if (1525 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1575 * xScale && 25 * yScale <= ofGetMouseY() && ofGetMouseY() <= 75 * yScale)
+		ofSetColor(ofColor::darkGray);
+	ofSetLineWidth(5 * xScale);
+	if (full) {
+		ofDrawLine((1555 - 2.5) * xScale, 45 * yScale, 1570 * xScale, 45 * yScale);
+		ofDrawLine(1555 * xScale, 30 * yScale, 1555 * xScale, (45 + 2.5) * yScale);
+		ofDrawLine(1530 * xScale, 55 * yScale, (1545 + 2.5) * xScale, 55 * yScale);
+		ofDrawLine(1545 * xScale, (55 - 2.5) * yScale, 1545 * xScale, 70 * yScale);
+
+		ofDrawLine(1555 * xScale, 45 * yScale, 1567.5 * xScale, 32.5 * yScale);
+		ofDrawLine(1545 * xScale, 55 * yScale, 1532.5 * xScale, 67.5 * yScale);
+	}
+	else {
+		ofDrawLine(1550 * xScale, 35 * yScale, (1565 + 2.5) * xScale, 35 * yScale);
+		ofDrawLine(1565 * xScale, (35 - 2.5) * yScale, 1565 * xScale, 50 * yScale);
+		ofDrawLine((1535 - 2.5) * xScale, 65 * yScale, 1550 * xScale, 65 * yScale);
+		ofDrawLine(1535 * xScale, 50 * yScale, 1535 * xScale, (65 + 2.5) * yScale);
+
+		ofDrawLine(1552.5 * xScale, 47.5 * yScale, 1565 * xScale, 35 * yScale);
+		ofDrawLine(1547.5 * xScale, 52.5 * yScale, 1535 * xScale, 65 * yScale);
+	}
+	ofSetLineWidth(1 * xScale);
+
+
+
+
 	if (menuFlag == 1) { // menu
 		if (loadingTime > 0) { // loading
 			char string[20] = "Bounce Ball";
@@ -530,7 +589,7 @@ void ofApp::draw() {
 		if (1350 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1450 * xScale && 250 * yScale <= ofGetMouseY() && ofGetMouseY() <= 350 * yScale)
 			ofSetColor(ofColor::yellow);
 		ofSetLineWidth(7.5 * xScale);
-		float a = 2.7; // LineWidth
+		float a = 2.5; // LineWidth
 		ofDrawLine(1375 * xScale, 275 * yScale, (1400 + a) * xScale, (300 + a) * yScale);
 		ofDrawLine(1375 * xScale, 325 * yScale, (1400 + a) * xScale, (300 - a) * yScale);
 		ofDrawLine(1400 * xScale, 275 * yScale, (1425 + a) * xScale, (300 + a) * yScale);

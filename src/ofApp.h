@@ -42,6 +42,9 @@ class ofApp : public ofBaseApp{
 		float xScale;
 		float yScale;
 
+		bool full;
+		int screenBuffer; // to prevent overclick
+
 		ofTrueTypeFont fontBig;
 		ofTrueTypeFont fontNormal;
 		ofTrueTypeFont fontMini;
