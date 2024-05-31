@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp{
 
 
 		void loadMap(int level, int difficulty);
+		void nextLevel();
 
 
 		Ball ball;

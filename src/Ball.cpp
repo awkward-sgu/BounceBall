@@ -120,7 +120,7 @@ void cleanMap() { // free linkedlist except for the head node
 
 
 
-void initBallMove() {
+void initBallMove() { // set possible moves
 	easy[0] = { 1,0 };
 	easy[1] = { 1,2 };
 	easy[2] = { 2,0 };

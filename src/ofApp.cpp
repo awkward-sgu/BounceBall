@@ -2,25 +2,29 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	// set window
 	ofSetFrameRate(600);
 	ofSetWindowTitle("Bounce Ball");
 	ofSetWindowPosition(100, 100);
 	ofSetWindowShape(1600, 900);
 
 
+	// basic setting
 	ofSetBackgroundColor(ofColor::white);
 	ofSetColor(ofColor::white);
 	ofSetLineWidth(1);
 	
+	// load font
 	fontBig.load("CascadiaMono.ttf", 75, true, true, true);
 	fontNormal.load("CascadiaMono.ttf", 30, true, true, true);
 	fontMini.load("CascadiaMono.ttf", 20, true, true, true);
 
+	// set flag
 	menuFlag = 1;
 	mouseBuffer = 0;
 	loadingTime = 200;
 
-
+	// init objects
 	initMap();
 	ball.reset();
 	initBallMove();
@@ -29,7 +33,7 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
-	if (menuFlag == 1) {
+	if (menuFlag == 1) { // first menu screen
 		if (loadingTime > 0) { // loading
 			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
 				loadingTime = 0;
@@ -70,7 +74,7 @@ void ofApp::update() {
 		}
 
 	}
-	else if (menuFlag == 2) {
+	else if (menuFlag == 2) { // second menu screen : choose difficulty
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
 			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200) {
 
@@ -99,15 +103,15 @@ void ofApp::update() {
 			}
 		}
 	}
-	else {
+	else { // main game
 
-		if (loadFlag) {
+		if (loadFlag) { // load map
 			loadMap(currentLevel, difficulty);
 			loadFlag = 0;
 		}
 
-		ball.setT();
-		ball.setY();
+		ball.setT(); // set current time
+		ball.setY(); // set y coordinate based on time
 
 
 		float rx = ball.getRealX() + ball.getRealSize(); // right x
@@ -119,6 +123,8 @@ void ofApp::update() {
 		int jumpFlag = 0;
 		int stopJumpingFlag = 0;
 
+
+		// end of map
 		if (lx < 0) {
 			ball.bounceRight();
 		}
@@ -127,6 +133,7 @@ void ofApp::update() {
 		}
 
 
+		// Map - ball bounce
 		block* curr = Map;
 
 		for (int i = 0; i < blockcount; i++) {
@@ -134,25 +141,28 @@ void ofApp::update() {
 
 			if (curr->blocktype) {
 
-				if (curr->x < rx && ball.getRealX() < curr->x) {
+				if (curr->x < rx && ball.getRealX() < curr->x) { // block's left wall
 					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
 						ball.bounceLeft();
 					}
 				}
-				else if (lx < curr->x + 1 && curr->x + 1 < ball.getRealX()) {
+				else if (lx < curr->x + 1 && curr->x + 1 < ball.getRealX()) { // block's right wall
 					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
 						ball.bounceRight();
 					}
 				}
-
+				// block's up & down
 				else if (curr->x <= ball.getRealX() && ball.getRealX() <= curr->x + 1) {
-					if (!jumpFlag && dy <= curr->y + 1 + 2 * ball.getRealSize() && uy > curr->y + 1 - 2 * ball.getRealSize()) { // fall gravity problem
+					if (!jumpFlag && dy <= curr->y + 1 + 2 * ball.getRealSize() && uy > curr->y + 1 - 2 * ball.getRealSize()) {
+						// jump when the ball touched a block on the top
+						// fall gravity problem : enough space
 						jumpFlag = 1;
 						if (curr->blocktype == finish) {
 							endFlag = 1;
 						}
 					}
 					if (!stopJumpingFlag && uy >= curr->y && dy < curr->y + 2 * ball.getRealSize()) {
+						// stop jumping when the ball touched a block on the bottom
 						stopJumpingFlag = 1;
 					}
 				}
@@ -174,39 +184,21 @@ void ofApp::update() {
 
 		if (endFlag) {
 			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && 0 <= ofGetMouseX() && ofGetMouseX() <= MAX_X) {
-				if (currentLevel > 0) {
-					ball.reset();
-					endFlag = 0;
-					currentLevel++;
-					loadFlag = 1;
-
-					if (currentLevel > MAX_LEVEL) {
-						menuFlag = 1;
-						loadingTime = 50;
-					}
-				}
-				else if (currentLevel == 0) {
-					menuFlag = 1;
-					loadingTime = 50;
-				}
-				else {
-					ball.reset();
-					endFlag = 0;
-					loadFlag = 1;
-				}
+				// when touched clear screen
+				nextLevel();
 			}
 		}
 		else {
 
-			if (ball.getRealY() < 0) {
+			if (ball.getRealY() < 0) { // when ball touched bottom : respawn
 				ball.reset();
 			}
 
 
-			if (ofGetKeyPressed(OF_KEY_LEFT)) {
+			if (ofGetKeyPressed(OF_KEY_LEFT)) { // left direction key
 				ball.goLeft();
 			}
-			if (ofGetKeyPressed(OF_KEY_RIGHT)) {
+			if (ofGetKeyPressed(OF_KEY_RIGHT)) { // right direction key
 				ball.goRight();
 			}
 		}
@@ -214,31 +206,11 @@ void ofApp::update() {
 
 
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
-			if (1300 <= ofGetMouseX() && ofGetMouseX() <= 1500) {
-
-				if (200 <= ofGetMouseY() && ofGetMouseY() <= 400) { // >> : next level
-					if (currentLevel > 0) {
-						ball.reset();
-						endFlag = 0;
-						currentLevel++;
-						loadFlag = 1;
-
-						if (currentLevel > MAX_LEVEL) {
-							menuFlag = 1;
-							loadingTime = 50;
-						}
-					}
-					else if (currentLevel == 0) {
-						menuFlag = 1;
-						loadingTime = 50;
-					}
-					else {
-						ball.reset();
-						endFlag = 0;
-						loadFlag = 1;
-					}
+			if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450) {
+				if (250 <= ofGetMouseY() && ofGetMouseY() <= 350) { // >> : next level
+					nextLevel();
 				}
-				else if (500 <= ofGetMouseY() && ofGetMouseY() <= 700) { // x : exit
+				else if (550 <= ofGetMouseY() && ofGetMouseY() <= 650) { // x : exit game
 					menuFlag = 1;
 					loadingTime = 50;
 				}
@@ -485,33 +457,24 @@ void ofApp::draw() {
 		for (int i = 0; i < blockcount; i++) {
 			curr = curr->next;
 
-			switch (curr->blocktype) {
-			case normal:
-				ofSetColor(ofColor::whiteSmoke);
+			if (curr->blocktype) {
+				if (curr->blocktype == normal) // normal block
+					ofSetColor(ofColor::whiteSmoke);
+				else if (curr->blocktype == finish) { // finish block
+					if (difficulty == 1) // easy
+						ofSetColor(ofColor::green);
+					else if (difficulty == 2) // medium
+						ofSetColor(ofColor::yellow);
+					else if (difficulty == 3) // hard
+						ofSetColor(ofColor::orangeRed);
+					else // tutorial
+						ofSetColor(ofColor::royalBlue);
+				}
 				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofNoFill();
 				ofSetColor(ofColor::black);
 				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
 				ofFill();
-				break;
-			case finish:
-				if (difficulty == 1)
-					ofSetColor(ofColor::green);
-				else if (difficulty == 2)
-					ofSetColor(ofColor::yellow);
-				else if (difficulty == 3)
-					ofSetColor(ofColor::orangeRed);
-				else
-					ofSetColor(ofColor::royalBlue);
-				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
-				ofNoFill();
-				ofSetColor(ofColor::black);
-				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
-				ofFill();
-				break;
-			default:
-				break;
-
 			}
 		}
 
@@ -528,48 +491,64 @@ void ofApp::draw() {
 		}
 
 
-		// vertical line
+		// vertical line : the right end of map
 		ofSetColor(ofColor::black);
 		ofDrawLine(MAX_X, 0, MAX_X, MAX_Y);
 
 
 
+		char s3[20] = "Next Level";
+		char s4[20] = "Exit Game";
+
 		// >> : next level
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(1300, 200, 200, 200, 20);
+		ofDrawRectRounded(1350, 250, 100, 100, 10);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(1300, 200, 200, 200, 20);
+		ofDrawRectRounded(1350, 250, 100, 100, 10);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (1300 <= ofGetMouseX() && ofGetMouseX() <= 1500 && 200 <= ofGetMouseY() && ofGetMouseY() <= 400)
+		if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450 && 250 <= ofGetMouseY() && ofGetMouseY() <= 350)
 			ofSetColor(ofColor::yellow);
-		ofSetLineWidth(10);
-		float a = 3.6; // LineWidth
-		ofDrawLine(1350, 250, 1400 + a, 300 + a);
-		ofDrawLine(1350, 350, 1400 + a, 300 - a);
-		ofDrawLine(1400, 250, 1450 + a, 300 + a);
-		ofDrawLine(1400, 350, 1450 + a, 300 - a);
+		ofSetLineWidth(7.5);
+		float a = 2.7; // LineWidth
+		ofDrawLine(1375, 275, 1400 + a, 300 + a);
+		ofDrawLine(1375, 325, 1400 + a, 300 - a);
+		ofDrawLine(1400, 275, 1425 + a, 300 + a);
+		ofDrawLine(1400, 325, 1425 + a, 300 - a);
 		ofSetLineWidth(1);
+		ofSetColor(ofColor::black);
+		fontMini.drawString(s3, 1420 - 20 * 5, 400);
 
 
 
-		// x : exit
+		// x : exit game
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(1300, 500, 200, 200, 20);
+		ofDrawRectRounded(1350, 550, 100, 100, 10);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(1300, 500, 200, 200, 20);
+		ofDrawRectRounded(1350, 550, 100, 100, 10);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (1300 <= ofGetMouseX() && ofGetMouseX() <= 1500 && 500 <= ofGetMouseY() && ofGetMouseY() <= 700)
+		if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450 && 550 <= ofGetMouseY() && ofGetMouseY() <= 650)
 			ofSetColor(ofColor::orangeRed);
-		ofSetLineWidth(10);
-		ofDrawLine(1350, 550, 1450, 650);
-		ofDrawLine(1350, 650, 1450, 550);
+		ofSetLineWidth(7.5);
+		ofDrawLine(1375, 575, 1425, 625);
+		ofDrawLine(1375, 625, 1425, 575);
 		ofSetLineWidth(1);
+		ofSetColor(ofColor::black);
+		fontMini.drawString(s4, 1420 - 20 * 4.5, 700);
+
 	}
+
+
+
+	// screen line
+	ofSetColor(ofColor::black);
+	ofDrawLine(0, 900, 1600, 900);
+	ofDrawLine(1600, 0, 1600, 900);
 }
+
 
 
 //--------------------------------------------------------------
@@ -826,8 +805,8 @@ void ofApp::loadMap(int level, int difficulty) {
 				addToMap(5, 5, normal);
 				addToMap(9, 2, normal);
 				addToMap(12, 4, normal);
-				addToMap(13, 7, normal);
-				addToMap(17, 4, finish);//
+				addToMap(14, 7, normal);
+				addToMap(18, 4, finish);//
 				break;
 			case 4:
 				addToMap(0, 0, normal);
@@ -936,40 +915,112 @@ void ofApp::loadMap(int level, int difficulty) {
 		addToMap(12, 4, normal);
 		addToMap(14, 5, normal);
 		addToMap(16, 6, normal);
-		addToMap(18, 8, finish);
+		addToMap(18, 8, finish);//
 
 		ball.reset();
 	}
 	else { // random
-		// finish  -  x: 15~19, y: 0~12
 		ball.setSpawn(0, 2);
 
-		addToMap(0, 0, normal);
+		// finish  -  x >= 15
+		// x: 0~19, y: 0~13 (not 14 since ball cannot be seen)
 
-		int x, y;
+		int x = 0;
+		int y = 0;
+		int tempx = 0;
+		int tempy = 0;
+		int r;
 
-		x = ofRandom(15, 19.99);
-		y = ofRandom(6, 11.99);
+		if (difficulty == 1) { // easy
+			while (x < 15) {
+				addToMap(x, y, normal);
 
-		if (difficulty == 1) {
+				while (1) {
+					r = rand() % NUM_EASY;
+					tempx = x + easy[r].x;
+					tempy = y + easy[r].y;
 
+					if (tempx >= 0 && tempx <= 19 && tempy >= 0 && tempy <= 13) { // if block is valid
+						x = tempx;
+						y = tempy;
+						break;
+					}
+				}
+			}
+			// finish block at the end
+
+			addToMap(x, y, finish);//
 		}
-		else if (difficulty == 2) {
+		else if (difficulty == 2) { // medium
+			while (x < 15) {
+				addToMap(x, y, normal);
 
+				while (1) {
+					r = rand() % NUM_MEDIUM;
+					tempx = x + medium[r].x;
+					tempy = y + medium[r].y;
+
+					if (tempx >= 0 && tempx <= 19 && tempy >= 0 && tempy <= 13) { // if block is valid
+						x = tempx;
+						y = tempy;
+						break;
+					}
+				}
+			}
+			// finish block at the end
+
+			addToMap(x, y, finish);//
 		}
-		else if (difficulty == 3) {
+		else if (difficulty == 3) { // hard
+			while (x < 15) {
+				addToMap(x, y, normal);
 
+				while (1) {
+					r = rand() % NUM_HARD;
+					tempx = x + hard[r].x;
+					tempy = y + hard[r].y;
+
+					if (tempx >= 0 && tempx <= 19 && tempy >= 0 && tempy <= 13) { // if block is valid
+						x = tempx;
+						y = tempy;
+						break;
+					}
+				}
+			}
+			// finish block at the end
+
+			addToMap(x, y, finish);//
 		}
-
-
-
-
-		addToMap(18, 8, finish);
 
 		ball.reset();
 	}
 }
 
+//--------------------------------------------------------------
+void ofApp::nextLevel() {
+	// next level macro
+
+	if (currentLevel > 0) {
+		ball.reset();
+		endFlag = 0;
+		currentLevel++;
+		loadFlag = 1;
+
+		if (currentLevel > MAX_LEVEL) {
+			menuFlag = 1;
+			loadingTime = 50;
+		}
+	}
+	else if (currentLevel == 0) {
+		menuFlag = 1;
+		loadingTime = 50;
+	}
+	else {
+		ball.reset();
+		endFlag = 0;
+		loadFlag = 1;
+	}
+}
 
 
 //--------------------------------------------------------------
