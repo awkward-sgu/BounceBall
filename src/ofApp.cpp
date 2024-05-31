@@ -157,6 +157,12 @@ void ofApp::update() {
 				}
 
 			}
+
+
+			if (210 * xScale <= ofGetMouseX() && ofGetMouseX() <= 290 * xScale && 110 * yScale <= ofGetMouseY() && ofGetMouseY() <= 190 * yScale) {
+				// go back
+				menuFlag = 1;
+			}
 		}
 	}
 	else { // main game
@@ -438,6 +444,19 @@ void ofApp::draw() {
 		// choose difficulty
 		ofSetColor(ofColor::black);
 		fontNormal.drawString(string, (800 - 30 * 7.5) * xScale, 160 * yScale);
+
+
+		// go back
+		ofSetColor(ofColor::aqua);
+		ofDrawRectRounded(210 * xScale, 110 * yScale, 80 * xScale, 80 * yScale, 10 * xScale);
+		ofNoFill();
+		ofSetColor(ofColor::black);
+		ofDrawRectRounded(210 * xScale, 110 * yScale, 80 * xScale, 80 * yScale, 10 * xScale);
+		ofFill();
+		ofSetColor(ofColor::black);
+		if (210 * xScale <= ofGetMouseX() && ofGetMouseX() <= 290 * xScale && 110 * yScale <= ofGetMouseY() && ofGetMouseY() <= 190 * yScale)
+			ofSetColor(ofColor::darkGray);
+		ofDrawTriangle(225, 150, 270, 125, 270, 175);
 
 
 		// easy
