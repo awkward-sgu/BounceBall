@@ -38,6 +38,10 @@ class ofApp : public ofBaseApp{
 		int currentLevel;
 		int difficulty;
 		int mouseBuffer; // to prevent overclick
+
+		float xScale;
+		float yScale;
+
 		ofTrueTypeFont fontBig;
 		ofTrueTypeFont fontNormal;
 		ofTrueTypeFont fontMini;

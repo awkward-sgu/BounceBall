@@ -9,15 +9,19 @@ void ofApp::setup() {
 	ofSetWindowShape(1600, 900);
 
 
+	// Window screen size
+	xScale = ofGetWindowWidth() / 1600.0f;
+	yScale = ofGetWindowHeight() / 900.0f;
+
 	// basic setting
 	ofSetBackgroundColor(ofColor::white);
 	ofSetColor(ofColor::white);
-	ofSetLineWidth(1);
+	ofSetLineWidth(1 * xScale);
 	
 	// load font
-	fontBig.load("CascadiaMono.ttf", 75, true, true, true);
-	fontNormal.load("CascadiaMono.ttf", 30, true, true, true);
-	fontMini.load("CascadiaMono.ttf", 20, true, true, true);
+	fontBig.load("CascadiaMono.ttf", 75 * xScale, true, true, true);
+	fontNormal.load("CascadiaMono.ttf", 30 * xScale, true, true, true);
+	fontMini.load("CascadiaMono.ttf", 20 * xScale, true, true, true);
 
 	// set flag
 	menuFlag = 1;
@@ -33,6 +37,20 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
+	// Window screen size
+	if (ofGetWindowWidth() / 1600.0f != xScale || ofGetWindowHeight() / 900.0f != yScale) {
+		xScale = ofGetWindowWidth() / 1600.0f;
+		yScale = ofGetWindowHeight() / 900.0f;
+		ofSetLineWidth(1 * xScale);
+
+		// load font
+		fontBig.load("CascadiaMono.ttf", 75 * xScale, true, true, true);
+		fontNormal.load("CascadiaMono.ttf", 30 * xScale, true, true, true);
+		fontMini.load("CascadiaMono.ttf", 20 * xScale, true, true, true);
+	}
+
+
+
 	if (menuFlag == 1) { // first menu screen
 		if (loadingTime > 0) { // loading
 			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
@@ -44,14 +62,14 @@ void ofApp::update() {
 		}
 		else {
 			if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
-				if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200) {
+				if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale) {
 
-					if (100 <= ofGetMouseY() && ofGetMouseY() <= 200) { // play
+					if (100 * yScale <= ofGetMouseY() && ofGetMouseY() <= 200 * yScale) { // play
 						menuFlag = 2;
 
 						currentLevel = 1;
 					}
-					else if (300 <= ofGetMouseY() && ofGetMouseY() <= 400) { // tutorial
+					else if (300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale) { // tutorial
 						menuFlag = 0;
 
 						endFlag = 0;
@@ -59,12 +77,12 @@ void ofApp::update() {
 						currentLevel = 0;
 						difficulty = 0;
 					}
-					else if (500 <= ofGetMouseY() && ofGetMouseY() <= 600) { // random
+					else if (500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale) { // random
 						menuFlag = 2;
 
 						currentLevel = -1;
 					}
-					else if (700 <= ofGetMouseY() && ofGetMouseY() <= 800) { // exit
+					else if (700 * yScale <= ofGetMouseY() && ofGetMouseY() <= 800 * yScale) { // exit
 						free(Map);
 						ofExit(0);
 					}
@@ -76,23 +94,23 @@ void ofApp::update() {
 	}
 	else if (menuFlag == 2) { // second menu screen : choose difficulty
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
-			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200) {
+			if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale) {
 
-				if (300 <= ofGetMouseY() && ofGetMouseY() <= 400) { // easy
+				if (300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale) { // easy
 					menuFlag = 0;
 
 					endFlag = 0;
 					loadFlag = 1;
 					difficulty = 1;
 				}
-				else if (500 <= ofGetMouseY() && ofGetMouseY() <= 600) { // medium
+				else if (500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale) { // medium
 					menuFlag = 0;
 
 					endFlag = 0;
 					loadFlag = 1;
 					difficulty = 2;
 				}
-				else if (700 <= ofGetMouseY() && ofGetMouseY() <= 800) { // hard
+				else if (700 * yScale <= ofGetMouseY() && ofGetMouseY() <= 800 * yScale) { // hard
 					menuFlag = 0;
 
 					endFlag = 0;
@@ -206,11 +224,11 @@ void ofApp::update() {
 
 
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
-			if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450) {
-				if (250 <= ofGetMouseY() && ofGetMouseY() <= 350) { // >> : next level
+			if (1350 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1450 * xScale) {
+				if (250 * yScale <= ofGetMouseY() && ofGetMouseY() <= 350 * yScale) { // >> : next level
 					nextLevel();
 				}
-				else if (550 <= ofGetMouseY() && ofGetMouseY() <= 650) { // x : exit game
+				else if (550 * yScale <= ofGetMouseY() && ofGetMouseY() <= 650 * yScale) { // x : exit game
 					menuFlag = 1;
 					loadingTime = 50;
 				}
@@ -248,30 +266,30 @@ void ofApp::draw() {
 			// shadow
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawCircle(500, 250, 50);
+			ofDrawEllipse(500 * xScale, 250 * yScale, 100 * xScale, 100 * yScale);
 			ofFill();
 
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawCircle(700, 180, 50);
+			ofDrawEllipse(700 * xScale, 180 * yScale, 100 * xScale, 100 * yScale);
 			ofFill();
 
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawCircle(900, 250, 50);
+			ofDrawEllipse(900 * xScale, 250 * yScale, 100 * xScale, 100 * yScale);
 			ofFill();
 
 			// ball
 			ofSetColor(ofColor::yellow);
-			ofDrawCircle(1020, 450, 50);
+			ofDrawEllipse(1020 * xScale, 450 * yScale, 100 * xScale, 100 * yScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawCircle(1020, 450, 50);
+			ofDrawEllipse(1020 * xScale, 450 * yScale, 100 * xScale, 100 * yScale);
 			ofFill();
 
 
 			ofSetColor(ofColor::black);
-			fontBig.drawString(string, 850 - 75 * 5.5, 650);
+			fontBig.drawString(string, (850 - 75 * 5.5) * xScale, 650 * yScale);
 		}
 		else {
 			char string1[20] = "Play";
@@ -281,54 +299,54 @@ void ofApp::draw() {
 
 			// play
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(400, 100, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 100 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(400, 100, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 100 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofFill();
 			ofSetColor(ofColor::white);
-			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 100 <= ofGetMouseY() && ofGetMouseY() <= 200)
+			if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 100 * yScale <= ofGetMouseY() && ofGetMouseY() <= 200 * yScale)
 				ofSetColor(ofColor::yellow);
-			fontNormal.drawString(string1, 800 - 30 * 2, 160);
+			fontNormal.drawString(string1, (800 - 30 * 2) * xScale, 160 * yScale);
 
 
 			// tutorial
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(400, 300, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(400, 300, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofFill();
 			ofSetColor(ofColor::white);
-			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 300 <= ofGetMouseY() && ofGetMouseY() <= 400)
+			if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale)
 				ofSetColor(ofColor::yellow);
-			fontNormal.drawString(string2, 800 - 30 * 4, 360);
+			fontNormal.drawString(string2, (800 - 30 * 4) * xScale, 360 * yScale);
 
 
 			// random
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(400, 500, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(400, 500, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofFill();
 			ofSetColor(ofColor::white);
-			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 500 <= ofGetMouseY() && ofGetMouseY() <= 600)
+			if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale)
 				ofSetColor(ofColor::yellow);
-			fontNormal.drawString(string3, 800 - 30 * 3, 560);
+			fontNormal.drawString(string3, (800 - 30 * 3) * xScale, 560 * yScale);
 
 
 			// exit
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(400, 700, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 700 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(400, 700, 800, 100, 15);
+			ofDrawRectRounded(400 * xScale, 700 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 			ofFill();
 			ofSetColor(ofColor::white);
-			if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 700 <= ofGetMouseY() && ofGetMouseY() <= 800)
+			if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 700 * yScale <= ofGetMouseY() && ofGetMouseY() <= 800 * yScale)
 				ofSetColor(ofColor::orangeRed);
-			fontNormal.drawString(string4, 800 - 30 * 2, 760);
+			fontNormal.drawString(string4, (800 - 30 * 2) * xScale, 760 * yScale);
 
 		}
 	}
@@ -341,46 +359,46 @@ void ofApp::draw() {
 
 		// choose difficulty
 		ofSetColor(ofColor::black);
-		fontNormal.drawString(string, 800 - 30 * 7.5, 160);
+		fontNormal.drawString(string, (800 - 30 * 7.5) * xScale, 160 * yScale);
 
 
 		// easy
 		ofSetColor(ofColor::green);
-		ofDrawRectRounded(400, 300, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 300, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofFill();
 		ofSetColor(ofColor::black);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 300 <= ofGetMouseY() && ofGetMouseY() <= 400)
+		if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale)
 			ofSetColor(ofColor::darkGray);
-		fontNormal.drawString(string1, 800 - 30 * 2, 360);
+		fontNormal.drawString(string1, (800 - 30 * 2) * xScale, 360 * yScale);
 
 
 		// medium
 		ofSetColor(ofColor::yellow);
-		ofDrawRectRounded(400, 500, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 500, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofFill();
 		ofSetColor(ofColor::black);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 500 <= ofGetMouseY() && ofGetMouseY() <= 600)
+		if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale)
 			ofSetColor(ofColor::darkGray);
-		fontNormal.drawString(string2, 800 - 30 * 3, 560);
+		fontNormal.drawString(string2, (800 - 30 * 3) * xScale, 560 * yScale);
 
 
 		// hard
 		ofSetColor(ofColor::orangeRed);
-		ofDrawRectRounded(400, 700, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 700 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(400, 700, 800, 100, 15);
+		ofDrawRectRounded(400 * xScale, 700 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 		ofFill();
 		ofSetColor(ofColor::black);
-		if (400 <= ofGetMouseX() && ofGetMouseX() <= 1200 && 700 <= ofGetMouseY() && ofGetMouseY() <= 800)
+		if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 700 * yScale <= ofGetMouseY() && ofGetMouseY() <= 800 * yScale)
 			ofSetColor(ofColor::darkGray);
-		fontNormal.drawString(string3, 800 - 30 * 2, 760);
+		fontNormal.drawString(string3, (800 - 30 * 2) * xScale, 760 * yScale);
 
 
 	}
@@ -396,7 +414,7 @@ void ofApp::draw() {
 			sprintf(levelString, "Random", currentLevel);
 		}
 		ofSetColor(ofColor::black);
-		fontNormal.drawString(levelString, 100, 100);
+		fontNormal.drawString(levelString, 100 * xScale, 100 * yScale);
 
 
 		if (currentLevel == 0) {
@@ -405,48 +423,49 @@ void ofApp::draw() {
 
 			// Key: 
 			ofSetColor(ofColor::black);
-			fontMini.drawString(s1, 8 * SCALE + 40, SCALE + 22);
+			fontMini.drawString(s1, (8 * SCALE + 40) * xScale, (SCALE + 22) * yScale);
 
 			// left direction key
 			ofSetColor(ofColor::yellow);
-			ofDrawRectRounded(10 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofDrawRectRounded((10 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20) * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(10 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofDrawRectRounded((10 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20) * xScale);
 			ofFill();
 			ofSetColor(ofColor::black);
-			ofDrawTriangle(620, 65, 620, 85, 605, 75);
+			ofDrawTriangle(620 * xScale, 65 * yScale, 620 * xScale, 85 * yScale, 605 * xScale, 75 * yScale);
 
 			// right direction key
 			ofSetColor(ofColor::yellow);
-			ofDrawRectRounded(11 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofDrawRectRounded((11 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20) * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(11 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20);
+			ofDrawRectRounded((11 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20) * xScale);
 			ofFill();
 			ofSetColor(ofColor::black);
-			ofDrawTriangle(670, 65, 670, 85, 685, 75);
+			ofDrawTriangle(670 * xScale, 65 * yScale, 670 * xScale, 85 * yScale, 685 * xScale, 75 * yScale);
 
 			// Finish Block: 
 			ofSetColor(ofColor::black);
-			fontMini.drawString(s2, 14 * SCALE + 14, SCALE + 22);
+			fontMini.drawString(s2, (14 * SCALE + 14) * xScale, (SCALE + 22) * yScale);
 
 			// mini finish block
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(18 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20.0f);
+			ofDrawRectRounded((18 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20.0f) * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(18 * SCALE, SCALE, SCALE / 2, SCALE / 2, SCALE / 20.0f);
+			ofDrawRectRounded((18 * SCALE) * xScale, SCALE * yScale, (SCALE / 2) * xScale, (SCALE / 2) * yScale, (SCALE / 20.0f) * xScale);
 			ofFill();
 		}
 
 
 		// ball
 		ofSetColor(ofColor::yellow);
-		ofDrawCircle(ball.getX(), MAX_Y - ball.getY(), ball.getSize());
+		ofDrawEllipse(ball.getX() * xScale, (MAX_Y - ball.getY()) * yScale, (ball.getSize() * 2) * xScale, (ball.getSize() * 2) * yScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawCircle(ball.getX(), MAX_Y - ball.getY(), ball.getSize());
+		ofDrawEllipse(ball.getX() * xScale, (MAX_Y - ball.getY()) * yScale, (ball.getSize() * 2) * xScale, (ball.getSize() * 2) * yScale);
+		ofNoFill();
 		ofFill();
 
 
@@ -470,10 +489,10 @@ void ofApp::draw() {
 					else // tutorial
 						ofSetColor(ofColor::royalBlue);
 				}
-				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded((curr->x * SCALE) * xScale, ((MAX_MAP_Y - curr->y - 1) * SCALE) * yScale, SCALE * xScale, SCALE * yScale, (SCALE / 10.0f) * xScale);
 				ofNoFill();
 				ofSetColor(ofColor::black);
-				ofDrawRectRounded(curr->x * SCALE, (MAX_MAP_Y - curr->y - 1) * SCALE, SCALE, SCALE, SCALE / 10.0f);
+				ofDrawRectRounded((curr->x * SCALE) * xScale, ((MAX_MAP_Y - curr->y - 1) * SCALE) * yScale, SCALE * xScale, SCALE * yScale, (SCALE / 10.0f) * xScale);
 				ofFill();
 			}
 		}
@@ -481,19 +500,19 @@ void ofApp::draw() {
 
 		if (endFlag) { // clear
 			ofSetColor(ofColor::royalBlue);
-			ofDrawRectRounded(7 * SCALE, 5 * SCALE, 8 * SCALE, 3 * SCALE, SCALE);
+			ofDrawRectRounded((7 * SCALE) * xScale, (5 * SCALE) * yScale, (8 * SCALE) * xScale, (3 * SCALE) * yScale, SCALE * xScale);
 			ofNoFill();
 			ofSetColor(ofColor::black);
-			ofDrawRectRounded(7 * SCALE, 5 * SCALE, 8 * SCALE, 3 * SCALE, SCALE);
+			ofDrawRectRounded((7 * SCALE) * xScale, (5 * SCALE) * yScale, (8 * SCALE) * xScale, (3 * SCALE) * yScale, SCALE * xScale);
 			ofFill();
 			ofSetColor(ofColor::yellow);
-			fontBig.drawString("Clear!", 7 * SCALE + 60, 5 * SCALE + 120);
+			fontBig.drawString("Clear!", (7 * SCALE + 60) * xScale, (5 * SCALE + 120) * yScale);
 		}
 
 
 		// vertical line : the right end of map
 		ofSetColor(ofColor::black);
-		ofDrawLine(MAX_X, 0, MAX_X, MAX_Y);
+		ofDrawLine(MAX_X * xScale, 0 * yScale, MAX_X * xScale, MAX_Y * yScale);
 
 
 
@@ -502,42 +521,42 @@ void ofApp::draw() {
 
 		// >> : next level
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(1350, 250, 100, 100, 10);
+		ofDrawRectRounded(1350 * xScale, 250 * yScale, 100 * xScale, 100 * yScale, 10 * xScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(1350, 250, 100, 100, 10);
+		ofDrawRectRounded(1350 * xScale, 250 * yScale, 100 * xScale, 100 * yScale, 10 * xScale);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450 && 250 <= ofGetMouseY() && ofGetMouseY() <= 350)
+		if (1350 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1450 * xScale && 250 * yScale <= ofGetMouseY() && ofGetMouseY() <= 350 * yScale)
 			ofSetColor(ofColor::yellow);
-		ofSetLineWidth(7.5);
+		ofSetLineWidth(7.5 * xScale);
 		float a = 2.7; // LineWidth
-		ofDrawLine(1375, 275, 1400 + a, 300 + a);
-		ofDrawLine(1375, 325, 1400 + a, 300 - a);
-		ofDrawLine(1400, 275, 1425 + a, 300 + a);
-		ofDrawLine(1400, 325, 1425 + a, 300 - a);
+		ofDrawLine(1375 * xScale, 275 * yScale, (1400 + a) * xScale, (300 + a) * yScale);
+		ofDrawLine(1375 * xScale, 325 * yScale, (1400 + a) * xScale, (300 - a) * yScale);
+		ofDrawLine(1400 * xScale, 275 * yScale, (1425 + a) * xScale, (300 + a) * yScale);
+		ofDrawLine(1400 * xScale, 325 * yScale, (1425 + a) * xScale, (300 - a) * yScale);
 		ofSetLineWidth(1);
 		ofSetColor(ofColor::black);
-		fontMini.drawString(s3, 1420 - 20 * 5, 400);
+		fontMini.drawString(s3, (1420 - 20 * 5) * xScale, 400 * yScale);
 
 
 
 		// x : exit game
 		ofSetColor(ofColor::royalBlue);
-		ofDrawRectRounded(1350, 550, 100, 100, 10);
+		ofDrawRectRounded(1350 * xScale, 550 * yScale, 100 * xScale, 100 * yScale, 10 * xScale);
 		ofNoFill();
 		ofSetColor(ofColor::black);
-		ofDrawRectRounded(1350, 550, 100, 100, 10);
+		ofDrawRectRounded(1350 * xScale, 550 * yScale, 100 * xScale, 100 * yScale, 10 * xScale);
 		ofFill();
 		ofSetColor(ofColor::white);
-		if (1350 <= ofGetMouseX() && ofGetMouseX() <= 1450 && 550 <= ofGetMouseY() && ofGetMouseY() <= 650)
+		if (1350 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1450 * xScale && 550 * yScale <= ofGetMouseY() && ofGetMouseY() <= 650 * yScale)
 			ofSetColor(ofColor::orangeRed);
-		ofSetLineWidth(7.5);
-		ofDrawLine(1375, 575, 1425, 625);
-		ofDrawLine(1375, 625, 1425, 575);
-		ofSetLineWidth(1);
+		ofSetLineWidth(7.5 * xScale);
+		ofDrawLine(1375 * xScale, 575 * yScale, 1425 * xScale, 625 * yScale);
+		ofDrawLine(1375 * xScale, 625 * yScale, 1425 * xScale, 575 * yScale);
+		ofSetLineWidth(1 * xScale);
 		ofSetColor(ofColor::black);
-		fontMini.drawString(s4, 1420 - 20 * 4.5, 700);
+		fontMini.drawString(s4, (1420 - 20 * 4.5) * xScale, 700 * yScale);
 
 	}
 
@@ -545,8 +564,8 @@ void ofApp::draw() {
 
 	// screen line
 	ofSetColor(ofColor::black);
-	ofDrawLine(0, 900, 1600, 900);
-	ofDrawLine(1600, 0, 1600, 900);
+	ofDrawLine(0 * xScale, 900 * yScale, 1600 * xScale, 900 * yScale);
+	ofDrawLine(1600 * xScale, 0 * yScale, 1600 * xScale, 900 * yScale);
 }
 
 
