@@ -36,13 +36,13 @@ private:
 	float lastY; // y when bounced
 	float x, y; // current ball's xy coordinate
 	float size; // ball's size
-	int spawnX, spawnY; // spawnpoint xy coordinate
+	short int spawnX, spawnY; // spawnpoint xy coordinate
 
 public:
 	Ball();
-	void reset(); // respawn ball
+	void reset(); // respawn and initialize ball
 
-	void setSpawn(int x, int y); // set spawnpoint
+	void setSpawn(short int x, short int y); // set spawnpoint
 	void setT(); // set t
 	void setY(); // set y based on t
 	void jump(); // make ball jump
@@ -67,7 +67,7 @@ enum blocktype {
 
 // block coordinate
 typedef struct _block {
-	int x, y;
+	short int x, y;
 	blocktype blocktype;
 	struct _block* next;
 }block;
@@ -77,21 +77,21 @@ int blockcount = 0; // num of blocks in the Map
 
 
 void initMap(); // initialize Map
-void addToMap(int x, int y, blocktype blocktype); // add block to Map
+void addToMap(short int x, short int y, blocktype blocktype); // add block to Map
 void cleanMap(); // make Map empty : reinitializing
 
 
 
 // direction ball can move
 typedef struct {
-	int x, y;
+	short int x, y;
 }ballMove;
 
-ballMove easy[NUM_EASY];
-ballMove medium[NUM_MEDIUM];
-ballMove hard[NUM_HARD];
+ballMove easy[NUM_EASY]; // easy pattern
+ballMove medium[NUM_MEDIUM]; // medium pattern
+ballMove hard[NUM_HARD]; // hard pattern
 
-void initBallMove();
+void initBallMove(); // possible move patterns
 
 
 #endif

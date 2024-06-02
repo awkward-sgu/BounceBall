@@ -15,7 +15,7 @@ void Ball::reset() {
 }
 
 
-void Ball::setSpawn(int x, int y) {
+void Ball::setSpawn(short int x, short int y) {
 	spawnX = x;
 	spawnY = y;
 }
@@ -89,7 +89,7 @@ void initMap() { // make empty head node
 	blockcount = 0;
 }
 
-void addToMap(int x, int y, blocktype blocktype) { // linking
+void addToMap(short int x, short int y, blocktype blocktype) { // linking
 	block* curr = Map;
 	for (int i = 0; i < blockcount; i++) {
 		curr = curr->next;
@@ -120,7 +120,7 @@ void cleanMap() { // free linkedlist except for the head node
 
 
 
-void initBallMove() { // set possible moves
+void initBallMove() { // set possible move patterns
 	easy[0] = { 1,0 };
 	easy[1] = { 1,2 };
 	easy[2] = { 2,0 };
