@@ -15,7 +15,7 @@ void Ball::reset() {
 }
 
 
-void Ball::setSpawn(short int x, short int y) {
+void Ball::setSpawn(int x, int y) {
 	spawnX = x;
 	spawnY = y;
 }
@@ -33,9 +33,10 @@ void Ball::jump() {
 	lastY = y;
 }
 
-void Ball::stopJumping() { // make ball fall
+void Ball::stopJumping() { // make ball stop jumping
 	t = 1;
 	lastY = y - 4.4 * 4.4 / 5;
+	// max height & ball size (t = 4.4/5 -> t = 1)
 }
 
 void Ball::goLeft() {
@@ -89,7 +90,7 @@ void initMap() { // make empty head node
 	blockcount = 0;
 }
 
-void addToMap(short int x, short int y, blocktype blocktype) { // linking
+void addToMap(int x, int y, blocktype blocktype) { // linking
 	block* curr = Map;
 	for (int i = 0; i < blockcount; i++) {
 		curr = curr->next;

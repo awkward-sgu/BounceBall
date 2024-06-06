@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 	// set window
-	ofSetFrameRate(600);
+	ofSetFrameRate(60);
 	ofSetWindowTitle("Bounce Ball");
 	ofSetWindowPosition(100, 100);
 	ofSetWindowShape(1600, 900);
@@ -51,6 +51,9 @@ void ofApp::update() {
 	}
 	else if (menuFlag == 2) { // second menu screen : choose difficulty
 		updateMenu2();
+	}
+	else if (menuFlag == 3) { // third menu screen : choose mode
+		updateMenu3();
 	}
 	else { // main game
 		updateGame();
@@ -141,8 +144,8 @@ void ofApp::updateMenu1() {
 					difficulty = 0;
 					helpFlag = 200;
 				}
-				else if (500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale) { // random
-					menuFlag = 2;
+				else if (500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale) { // mode
+					menuFlag = 3;
 
 					currentLevel = -1;
 				}
@@ -182,6 +185,37 @@ void ofApp::updateMenu2() {
 				difficulty = 3;
 			}
 
+		}
+
+
+		if (210 * xScale <= ofGetMouseX() && ofGetMouseX() <= 290 * xScale && 110 * yScale <= ofGetMouseY() && ofGetMouseY() <= 190 * yScale) {
+			// go back
+			if (currentLevel < 0) { // mode
+				menuFlag = 3;
+			}
+			else {
+				menuFlag = 1;
+			}
+		}
+	}
+}
+void ofApp::updateMenu3() {
+
+	if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer) {
+		if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale) {
+			if (300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale) { // random
+				menuFlag = 2;
+
+				currentLevel = -1;
+			}
+			else if (500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale) { // ?
+				currentLevel = -2;
+				menuFlag = 0;
+
+				endFlag = false;
+				loadFlag = true;
+				difficulty = 0;
+			}
 		}
 
 
@@ -357,6 +391,9 @@ void ofApp::draw() {
 	else if (menuFlag == 2) { // choose difficulty
 		drawMenu2();
 	}
+	else if (menuFlag == 3) { // choose mode
+		drawMenu3();
+	}
 	else {
 		drawGame();
 	}
@@ -412,7 +449,7 @@ void ofApp::drawMenu1() {
 
 	char string1[20] = "Play";
 	char string2[20] = "Tutorial";
-	char string3[20] = "Random";
+	char string3[20] = "Mode";
 	char string4[20] = "Exit";
 
 	// play
@@ -441,7 +478,7 @@ void ofApp::drawMenu1() {
 	fontNormal.drawString(string2, (800 - 30 * 4) * xScale, 360 * yScale);
 
 
-	// random
+	// mode
 	ofSetColor(ofColor::royalBlue);
 	ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
 	ofNoFill();
@@ -451,7 +488,7 @@ void ofApp::drawMenu1() {
 	ofSetColor(ofColor::white);
 	if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale)
 		ofSetColor(ofColor::yellow);
-	fontNormal.drawString(string3, (800 - 30 * 3) * xScale, 560 * yScale);
+	fontNormal.drawString(string3, (800 - 30 * 2) * xScale, 560 * yScale);
 
 
 	// exit
@@ -561,6 +598,54 @@ void ofApp::drawMenu2() {
 		ofSetColor(ofColor::darkGray);
 	fontNormal.drawString(string3, (800 - 30 * 2) * xScale, 760 * yScale);
 }
+void ofApp::drawMenu3() {
+
+	char string[30] = "Choose Mode";
+	char string1[10] = "Random";
+	char string2[10] = "Meteor";
+
+	// choose mode
+	ofSetColor(ofColor::black);
+	fontNormal.drawString(string, (800 - 30 * 5.5) * xScale, 160 * yScale);
+
+
+	// go back
+	ofSetColor(ofColor::aqua);
+	ofDrawRectRounded(210 * xScale, 110 * yScale, 80 * xScale, 80 * yScale, 10 * xScale);
+	ofNoFill();
+	ofSetColor(ofColor::black);
+	ofDrawRectRounded(210 * xScale, 110 * yScale, 80 * xScale, 80 * yScale, 10 * xScale);
+	ofFill();
+	ofSetColor(ofColor::black);
+	if (210 * xScale <= ofGetMouseX() && ofGetMouseX() <= 290 * xScale && 110 * yScale <= ofGetMouseY() && ofGetMouseY() <= 190 * yScale)
+		ofSetColor(ofColor::darkGray);
+	ofDrawTriangle(225 * xScale, 150 * yScale, 270 * xScale, 125 * yScale, 270 * xScale, 175 * yScale);
+
+	// random
+	ofSetColor(ofColor::royalBlue);
+	ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
+	ofNoFill();
+	ofSetColor(ofColor::black);
+	ofDrawRectRounded(400 * xScale, 300 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
+	ofFill();
+	ofSetColor(ofColor::white);
+	if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 300 * yScale <= ofGetMouseY() && ofGetMouseY() <= 400 * yScale)
+		ofSetColor(ofColor::yellow);
+	fontNormal.drawString(string1, (800 - 30 * 3) * xScale, 360 * yScale);
+
+
+	// ?
+	ofSetColor(ofColor::royalBlue);
+	ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
+	ofNoFill();
+	ofSetColor(ofColor::black);
+	ofDrawRectRounded(400 * xScale, 500 * yScale, 800 * xScale, 100 * yScale, 15 * xScale);
+	ofFill();
+	ofSetColor(ofColor::white);
+	if (400 * xScale <= ofGetMouseX() && ofGetMouseX() <= 1200 * xScale && 500 * yScale <= ofGetMouseY() && ofGetMouseY() <= 600 * yScale)
+		ofSetColor(ofColor::yellow);
+	fontNormal.drawString(string2, (800 - 30 * 3) * xScale, 560 * yScale);
+}
 void ofApp::drawGame() {
 
 	char levelString[20];
@@ -570,8 +655,11 @@ void ofApp::drawGame() {
 	else if (currentLevel == 0) {
 		sprintf(levelString, "Tutorial", currentLevel);
 	}
-	else {
+	else if (currentLevel == -1) {
 		sprintf(levelString, "Random", currentLevel);
+	}
+	else if (currentLevel == -2) {
+		sprintf(levelString, "Meteor", currentLevel);
 	}
 	ofSetColor(ofColor::black);
 	fontNormal.drawString(levelString, 100 * xScale, 100 * yScale);
@@ -744,7 +832,7 @@ void ofApp::drawTutorial() {
 
 
 
-void ofApp::loadMap(short int level, short int difficulty) {
+void ofApp::loadMap(int level, int difficulty) {
 	cleanMap();
 
 	if (level > 0) { // play
@@ -763,54 +851,11 @@ void ofApp::loadMap(short int level, short int difficulty) {
 	else if (level == 0) { // tutorial
 		setMapTutorial();
 	}
-	else { // random
-		ball.setSpawn(0, 2);
-
-		// finish  -  x >= 15
-		// x: 0~19, y: 0~13 (not 14 since ball cannot be seen)
-
-		short int x = 0;
-		short int y = 0;
-		short int tempx = 0;
-		short int tempy = 0;
-		short int r;
-
-		
-		while (x < 15) {
-			addToMap(x, y, normal);
-
-			while (1) {
-				if (difficulty == 1) { // easy
-					r = rand() % NUM_EASY;
-					tempx = x + easy[r].x;
-					tempy = y + easy[r].y;
-				}
-				else if (difficulty == 2) { // medium
-					r = rand() % NUM_MEDIUM;
-					tempx = x + medium[r].x;
-					tempy = y + medium[r].y;
-				}
-				else if (difficulty == 3) { // hard
-					r = rand() % NUM_HARD;
-					tempx = x + hard[r].x;
-					tempy = y + hard[r].y;
-				}
-
-
-
-				if (tempx >= 0 && tempx <= 19 && tempy >= 0 && tempy <= 13) { // if block is valid
-					x = tempx;
-					y = tempy;
-					break;
-				}
-			}
-		}
-
-		// finish block at the end
-
-		addToMap(x, y, finish);//
-
-		ball.reset();
+	else if (level == -1) { // random
+		setMapRandom(difficulty);
+	}
+	else if (level == -2) { // meteor
+		setMapMeteor();
 	}
 }
 void ofApp::setMapEasy(int level) {
@@ -1176,6 +1221,200 @@ void ofApp::setMapTutorial() {
 
 	ball.reset();
 }
+void ofApp::setMapRandom(int difficulty) {
+
+	ball.setSpawn(0, 2);
+
+	// finish  -  x >= 15
+	// x: 0~19, y: 0~13 (not 14 since ball cannot be seen)
+
+	int x = 0;
+	int y = 0;
+	int tempx = 0;
+	int tempy = 0;
+	int r;
+
+
+	while (x < 15) {
+		addToMap(x, y, normal);
+
+		while (1) {
+			if (difficulty == 1) { // easy
+				r = rand() % NUM_EASY;
+				tempx = x + easy[r].x;
+				tempy = y + easy[r].y;
+			}
+			else if (difficulty == 2) { // medium
+				r = rand() % NUM_MEDIUM;
+				tempx = x + medium[r].x;
+				tempy = y + medium[r].y;
+			}
+			else if (difficulty == 3) { // hard
+				r = rand() % NUM_HARD;
+				tempx = x + hard[r].x;
+				tempy = y + hard[r].y;
+			}
+
+
+
+			if (tempx >= 0 && tempx <= 19 && tempy >= 0 && tempy <= 13) { // if block is valid
+				x = tempx;
+				y = tempy;
+				break;
+			}
+		}
+	}
+
+	// finish block at the end
+
+	addToMap(x, y, finish);//
+
+	ball.reset();
+}
+void ofApp::setMapMeteor() {
+
+
+	int finishX = rand() % 4 + 15;
+	int finishY = rand() % 5 + 8;
+
+	int* temp = (int*)malloc(sizeof(int) * finishX); // Y coordinate
+	temp[0] = 0;
+
+
+	bool** connected = (bool**)malloc(sizeof(bool*) * finishX); // whether normal blocks are connected
+	for (int i = 0; i < finishX; i++) {
+		connected[i] = (bool*)malloc(sizeof(bool) * finishX);
+	}
+
+	bool* end = (bool*)malloc(sizeof(bool*) * finishX); // wheter can end
+
+
+
+	bool check = false;
+
+	while (1) {
+
+		cleanMap();
+
+
+
+		for (int i = 1; i < finishX; i++) { // randomly set block
+			temp[i] = rand() % (finishY + 2);
+			if (rand() % 8) {
+				addToMap(i, temp[i], normal);
+			}
+			else {
+				temp[i] = INF;
+			}
+		}
+
+		for (int i = 0; i < finishX; i++) {
+			end[i] = false;
+			for (int j = 0; j < finishX; j++) {
+				connected[i][j] = false;
+			}
+		}
+
+
+
+		int count;
+		for (int i = 0; i < finishX; i++) {
+			for (count = 1; count <= 3; count++) {
+
+				if (count == 1) { // count == 1
+					if (i + count >= finishX) {
+						if (finishY <= temp[i] + 3) {
+							end[i] = true;
+							break;
+						}
+					}
+					else {
+						if (temp[i + count] <= temp[i] + 3) {
+							connected[i][i + count] = true;
+							break;
+						}
+						else if (temp[i + count] <= temp[i] + 5) { // blocking path
+							break;
+						}
+					}
+				}
+				else if (count == 2) { // count == 2
+					if (i + count >= finishX) {
+						if (finishY <= temp[i] + 3) {
+							end[i] = true;
+							break;
+						}
+					}
+					else {
+						if (temp[i + count] <= temp[i] + 3) {
+							connected[i][i + count] = true;
+							break;
+						}
+						else if (temp[i + count] <= temp[i] + 5) { // blocking path
+							break;
+						}
+					}
+				}
+				else if (count == 3) { // count == 3
+					if (i + count >= finishX) {
+						if (finishY <= temp[i] + 2) {
+							end[i] = true;
+							break;
+						}
+					}
+					else {
+						if (temp[i + count] <= temp[i] + 2) {
+							connected[i][i + count] = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+
+
+
+		// Floyd-Warshall
+		for (int i = 0; i < finishX; i++) {
+			for (int j = 0; j < finishX; j++) {
+				for (int k = 0; k < finishX; k++) {
+					if (connected[i][k] && connected[k][j]) {
+						connected[i][j] = true;
+					}
+				}
+			}
+		}
+
+
+
+		for (int i = 0; i < finishX; i++) { // whether there are path
+			if (connected[0][i] && end[i]) {
+				check = true;
+			}
+		}
+		if (check) { // the path exists : end
+			break;
+		}
+	}
+
+	free(temp);
+	for (int i = 0; i < finishX; i++) {
+		free(connected[i]);
+	}
+	free(connected);
+	free(end);
+
+
+
+	ball.setSpawn(0, 2);
+
+	addToMap(0, 0, normal);
+	addToMap(finishX, finishY, finish);//
+
+	ball.reset();
+}
+
 
 
 void ofApp::nextLevel() {
