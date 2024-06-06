@@ -237,7 +237,7 @@ void ofApp::updateGame() {
 	updateBounce();
 
 	if (currentLevel == -2) { // easteregg
-		if ((100 + 30 * 3) * xScale <= ball.getX() && ball.getX() <= (100 + 30 * 4) * xScale) {
+		if ((100 + 30 * 3) <= ball.getX() && ball.getX() <= (100 + 30 * 4)) {
 			if (13.25 <= ball.getRealY() && ball.getRealY() <= 14) {
 				easteregg = true;
 			}
@@ -1330,6 +1330,7 @@ void ofApp::setMapMeteor() {
 			}
 		}
 
+		// initialize
 		for (int i = 0; i < finishX; i++) {
 			end[i] = false;
 			for (int j = 0; j < finishX; j++) {
@@ -1441,6 +1442,7 @@ void ofApp::setMapMeteor() {
 		}
 	}
 
+	// free
 	free(temp);
 	for (int i = 0; i < finishX; i++) {
 		free(connected[i]);

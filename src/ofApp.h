@@ -54,6 +54,8 @@ class ofApp : public ofBaseApp{
 		void setMapTutorial();
 		void setMapRandom(int difficulty);
 		void setMapMeteor();
+
+
 		void nextLevel(); // next level macro
 
 
