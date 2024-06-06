@@ -66,6 +66,7 @@ class ofApp : public ofBaseApp{
 		int difficulty;
 		int mouseBuffer; // to prevent overclick
 		int helpFlag; // tutorial help
+		bool easteregg;
 
 		float xScale; // scale of x : based on screen size
 		float yScale; // scale of y : based on screen size

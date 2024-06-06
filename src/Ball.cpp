@@ -3,7 +3,7 @@
 Ball::Ball(){
 	x = 0; y = 0;
 	t = 0;
-	lastY = y;
+	lastY = round(y) + size;
 	size = 0.2;
 	spawnX = 0; spawnY = 0;
 	
@@ -21,7 +21,7 @@ void Ball::setSpawn(int x, int y) {
 }
 
 void Ball::setT() {
-	t += ofGetFrameRate() / 1800;
+	t += 2 / ofGetTargetFrameRate();
 }
 
 void Ball::setY() {
@@ -31,6 +31,10 @@ void Ball::setY() {
 void Ball::jump() {
 	t = 0;
 	lastY = y;
+	if (y > round(y)) { // superjump ban
+		lastY = round(y);
+	}
+
 }
 
 void Ball::stopJumping() { // make ball stop jumping
@@ -40,19 +44,19 @@ void Ball::stopJumping() { // make ball stop jumping
 }
 
 void Ball::goLeft() {
-	x -= ofGetFrameRate() / 1200;
+	x -= 3 / ofGetTargetFrameRate();
 }
 
 void Ball::goRight() {
-	x += ofGetFrameRate() / 1200;
+	x += 3 / ofGetTargetFrameRate();
 }
 
 void Ball::bounceLeft() {
-	x -= ofGetFrameRate() / 1200;
+	x -= 3 / ofGetTargetFrameRate();
 }
 
 void Ball::bounceRight() {
-	x += ofGetFrameRate() / 1200;
+	x += 3 / ofGetTargetFrameRate();
 }
 
 

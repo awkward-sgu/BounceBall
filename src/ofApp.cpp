@@ -34,6 +34,7 @@ void ofApp::initAll() {
 	mouseBuffer = 0;
 	loadingTime = 200;
 	helpFlag = 0;
+	easteregg = false;
 
 	// init objects
 	initMap();
@@ -235,6 +236,14 @@ void ofApp::updateGame() {
 
 	updateBounce();
 
+	if (currentLevel == -2) { // easteregg
+		if ((100 + 30 * 3) * xScale <= ball.getX() && ball.getX() <= (100 + 30 * 4) * xScale) {
+			if (13.25 <= ball.getRealY() && ball.getRealY() <= 14) {
+				easteregg = true;
+			}
+		}
+	}
+
 
 	if (endFlag) {
 		if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT) && !mouseBuffer && 0 * xScale <= ofGetMouseX() && ofGetMouseX() <= MAX_X * xScale) {
@@ -270,6 +279,7 @@ void ofApp::updateGame() {
 			else if (550 * yScale <= ofGetMouseY() && ofGetMouseY() <= 650 * yScale) { // x : exit game
 				menuFlag = 1;
 				loadingTime = 50;
+				easteregg = false;
 			}
 
 		}
@@ -306,30 +316,31 @@ void ofApp::updateBounce() {
 		curr = curr->next;
 
 		if (curr->blocktype) {
-
-			if (curr->x < rx && ball.getRealX() < curr->x) { // block's left wall
-				if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
-					ball.bounceLeft();
-				}
-			}
-			else if (lx < curr->x + 1 && curr->x + 1 < ball.getRealX()) { // block's right wall
-				if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
-					ball.bounceRight();
-				}
-			}
-			// block's up & down
-			else if (curr->x <= ball.getRealX() && ball.getRealX() <= curr->x + 1) {
-				if (!jumpFlag && dy <= curr->y + 1 + 2 * ball.getRealSize() && uy > curr->y + 1 - 2 * ball.getRealSize()) {
-					// jump when the ball touched a block on the top
-					// fall gravity problem : enough space
-					jumpFlag = true;
-					if (curr->blocktype == finish) {
-						endFlag = true;
+			if (curr->x < rx && lx < curr->x + 1) {
+				if (ball.getRealX() < curr->x) { // block's left wall
+					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
+						ball.bounceLeft();
 					}
 				}
-				if (!stopJumpingFlag && uy >= curr->y && dy < curr->y + 2 * ball.getRealSize()) {
-					// stop jumping when the ball touched a block on the bottom
-					stopJumpingFlag = true;
+				else if (curr->x + 1 < ball.getRealX()) { // block's right wall
+					if (curr->y <= ball.getRealY() && ball.getRealY() <= curr->y + 1) {
+						ball.bounceRight();
+					}
+				}
+				// block's up & down
+				else {
+					if (dy <= curr->y + 1 + 2 * ball.getRealSize() && uy > curr->y + 1 - 2 * ball.getRealSize()) {
+						// jump when the ball touched a block on the top
+						// fall gravity problem : enough space
+						jumpFlag = true;
+						if (curr->blocktype == finish) {
+							endFlag = true;
+						}
+					}
+					if (uy >= curr->y && dy < curr->y + 2 * ball.getRealSize()) {
+						// stop jumping when the ball touched a block on the bottom
+						stopJumpingFlag = true;
+					}
 				}
 			}
 
@@ -339,6 +350,7 @@ void ofApp::updateBounce() {
 
 
 	if (jumpFlag) {
+
 		ball.jump();
 	}
 	else if (stopJumpingFlag) {
@@ -679,6 +691,17 @@ void ofApp::drawGame() {
 	ofNoFill();
 	ofFill();
 
+
+	// easteregg ball
+	if (easteregg) {
+		ofSetColor(ofColor::yellow);
+		ofDrawEllipse((100 + 30 * 3.5) * xScale, (MAX_Y - 13.5 * SCALE) * yScale, (ball.getSize() * 2) * xScale, (ball.getSize() * 2) * yScale);
+		ofNoFill();
+		ofSetColor(ofColor::black);
+		ofDrawEllipse((100 + 30 * 3.5) * xScale, (MAX_Y - 13.5 * SCALE) * yScale, (ball.getSize() * 2) * xScale, (ball.getSize() * 2) * yScale);
+		ofNoFill();
+		ofFill();
+	}
 
 
 	// Map
@@ -1273,9 +1296,8 @@ void ofApp::setMapRandom(int difficulty) {
 }
 void ofApp::setMapMeteor() {
 
-
-	int finishX = rand() % 4 + 15;
-	int finishY = rand() % 5 + 8;
+	int finishX = rand() % 4 + 15; // 15 ~ 18
+	int finishY = rand() % 4 + 9; // 9 ~ 12
 
 	int* temp = (int*)malloc(sizeof(int) * finishX); // Y coordinate
 	temp[0] = 0;
@@ -1299,8 +1321,8 @@ void ofApp::setMapMeteor() {
 
 
 		for (int i = 1; i < finishX; i++) { // randomly set block
-			temp[i] = rand() % (finishY + 2);
-			if (rand() % 8) {
+			temp[i] = rand() % 13; // 0 ~ 12
+			if (rand() % 5) { // 80%
 				addToMap(i, temp[i], normal);
 			}
 			else {
@@ -1319,7 +1341,8 @@ void ofApp::setMapMeteor() {
 
 		int count;
 		for (int i = 0; i < finishX; i++) {
-			for (count = 1; count <= 3; count++) {
+			// check front 4 block
+			for (count = 1; count <= 4; count++) {
 
 				if (count == 1) { // count == 1
 					if (i + count >= finishX) {
@@ -1365,6 +1388,26 @@ void ofApp::setMapMeteor() {
 					else {
 						if (temp[i + count] <= temp[i] + 2) {
 							connected[i][i + count] = true;
+							break;
+						}
+						else if (temp[i + count] <= temp[i] + 4) { // blocking path
+							break;
+						}
+					}
+				}
+				else if (count == 4) { // count == 4
+					if (i + count >= finishX) {
+						if (finishY <= temp[i] - 3) {
+							end[i] = true;
+							break;
+						}
+					}
+					else {
+						if (temp[i + count] <= temp[i] - 3) {
+							connected[i][i + count] = true;
+							break;
+						}
+						else if (temp[i + count] <= temp[i] - 1) { // blocking path
 							break;
 						}
 					}
@@ -1440,6 +1483,8 @@ void ofApp::nextLevel() {
 		endFlag = false;
 		loadFlag = true;
 	}
+
+	easteregg = false;
 }
 
 
