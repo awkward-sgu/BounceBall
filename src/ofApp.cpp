@@ -1355,7 +1355,6 @@ void ofApp::setMapMeteor() {
 					else {
 						if (temp[i + count] <= temp[i] + 3) {
 							connected[i][i + count] = true;
-							break;
 						}
 						else if (temp[i + count] <= temp[i] + 5) { // blocking path
 							break;
@@ -1372,7 +1371,6 @@ void ofApp::setMapMeteor() {
 					else {
 						if (temp[i + count] <= temp[i] + 3) {
 							connected[i][i + count] = true;
-							break;
 						}
 						else if (temp[i + count] <= temp[i] + 5) { // blocking path
 							break;
@@ -1389,7 +1387,6 @@ void ofApp::setMapMeteor() {
 					else {
 						if (temp[i + count] <= temp[i] + 2) {
 							connected[i][i + count] = true;
-							break;
 						}
 						else if (temp[i + count] <= temp[i] + 4) { // blocking path
 							break;
@@ -1406,7 +1403,6 @@ void ofApp::setMapMeteor() {
 					else {
 						if (temp[i + count] <= temp[i] - 3) {
 							connected[i][i + count] = true;
-							break;
 						}
 						else if (temp[i + count] <= temp[i] - 1) { // blocking path
 							break;
