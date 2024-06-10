@@ -52,11 +52,11 @@ void Ball::goRight() {
 }
 
 void Ball::bounceLeft() {
-	x -= 3 / ofGetTargetFrameRate();
+	x -= 4 / ofGetTargetFrameRate();
 }
 
 void Ball::bounceRight() {
-	x += 3 / ofGetTargetFrameRate();
+	x += 4 / ofGetTargetFrameRate();
 }
 
 
