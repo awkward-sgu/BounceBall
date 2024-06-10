@@ -80,6 +80,6 @@ class ofApp : public ofBaseApp{
 		ofTrueTypeFont fontBig;
 		ofTrueTypeFont fontNormal;
 		ofTrueTypeFont fontMini;
-		
+
 };
 

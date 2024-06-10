@@ -350,7 +350,6 @@ void ofApp::updateBounce() {
 
 
 	if (jumpFlag) {
-
 		ball.jump();
 	}
 	else if (stopJumpingFlag) {
